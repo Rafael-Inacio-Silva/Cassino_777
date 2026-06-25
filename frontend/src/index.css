@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #08091a;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-gold-gradient text-casino-bg font-bold py-3 px-6 rounded-lg
+           transition-all duration-200 hover:brightness-110 hover:scale-[1.02]
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:hover:scale-100 disabled:hover:brightness-100;
+  }
+
+  .btn-outline {
+    @apply border border-casino-gold text-casino-gold font-semibold py-3 px-6 rounded-lg
+           transition-all duration-200 hover:bg-casino-gold hover:text-casino-bg
+           active:scale-[0.98];
+  }
+
+  .input-casino {
+    @apply w-full bg-casino-surface border border-casino-border text-white
+           rounded-lg px-4 py-3 text-sm outline-none
+           focus:border-casino-gold focus:ring-1 focus:ring-casino-gold
+           placeholder-casino-muted transition-colors duration-200;
+  }
+
+  .card-casino {
+    @apply bg-casino-card border border-casino-border rounded-xl p-6;
+  }
+}

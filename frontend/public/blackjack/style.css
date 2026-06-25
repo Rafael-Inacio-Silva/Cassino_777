@@ -1,0 +1,617 @@
+/* ─── Fonte Oswald (idêntica à roleta) ──────────────────── */
+@font-face {
+  font-family: 'oswald';
+  src: url(src/fonts/Oswald-VariableFont_wght.ttf) format('truetype');
+}
+
+/* ─── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  background: #071a07;
+  font-family: 'Georgia', serif;
+  user-select: none;
+}
+
+/* ─── Table background ──────────────────────────────────── */
+#tableBg {
+  position: absolute; inset: 0; z-index: 0;
+  background: url('mesa.png') center / cover no-repeat;
+}
+
+/* ─── Game wrapper ──────────────────────────────────────── */
+#game {
+  position: relative; z-index: 1;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+}
+
+/* ─── Back button (idêntico à roleta) ───────────────────── */
+#backToLobby {
+  position: fixed; top: 1vh; right: 1vh; z-index: 10000;
+  background: rgba(0,0,0,0.65); color: #c9952a;
+  border: 1px solid #c9952a; border-radius: 0.8vh;
+  padding: 0.5vh 1.2vh; font-size: 1.6vh;
+  font-family: oswald, sans-serif; font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none; transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+#backToLobby:hover { background: #c9952a; color: #08091a; }
+
+/* ─── Music info bar (igual à roleta) ───────────────────── */
+#musicInfo {
+  width: 44vh; height: 4vh;
+  position: fixed; top: 0; left: 0;
+  background-color: #2b2b2bb0;
+  padding: 0.2%;
+  display: flex; align-items: center;
+  box-shadow: 0 0 0 0.2vh #8080809e;
+  border-bottom-right-radius: 4vh;
+  z-index: 200; color: #fff;
+}
+#musicInfo > button {
+  background: none; border: none;
+  font-size: 2vh; padding: 0; margin-right: 1vh;
+  text-shadow: 0 0 0.2vh white; cursor: pointer; color: #fff;
+}
+#musicInfo > button:hover { color: #00bfff; }
+#vinyl {
+  animation: spin 2s linear infinite;
+  animation-play-state: paused;
+  background: url('vinyl.png') center/100% no-repeat;
+  width: 3vh; height: 3vh;
+  display: block; border-radius: 50%; flex-shrink: 0;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+#musicInfo > p { margin: 0 auto; padding: 0; font-size: 2vh; color: #edb513; }
+#nowPlaying { width: 12vh; text-align: center; }
+#musicTimer { width: 4vh; font-size: 2vh; }
+
+/* ─── Main area ─────────────────────────────────────────── */
+#mainArea {
+  flex: 1;
+  min-height: 0; /* permite que o flex encolha abaixo do conteúdo */
+  display: flex; flex-direction: column;
+  justify-content: space-between; align-items: center;
+  padding: 42vh 0 1vh;
+  position: relative; z-index: 2;
+}
+
+/* ─── Dealer / Player sections ──────────────────────────── */
+#dealerSection, #playerSection {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.5vh;
+}
+#playerSection { position: relative; overflow: visible; }
+
+/* ─── Cards row ─────────────────────────────────────────── */
+.cards-row {
+  display: flex; gap: 0.8vh;
+  min-height: 12.5vh;
+  align-items: center; justify-content: flex-start;
+}
+
+/* ─── Card (proporção 2:3 — 2730×4096px) ─────────────────── */
+.card {
+  width: 8vh; height: 12vh;
+  border-radius: 0.7vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 2px 5px 14px rgba(0,0,0,0.7);
+  flex-shrink: 0;
+}
+
+/* ─── Slot invisível ─────────────────────────────────────── */
+.card-slot {
+  width: 8vh; height: 12vh;
+  flex-shrink: 0;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+/* ─── Carta voando do shoe ─────────────────────────────────── */
+.card-flier {
+  position: fixed !important;
+  z-index: 1000;
+  pointer-events: none;
+  margin: 0 !important;
+  box-shadow: 4px 8px 24px rgba(0,0,0,0.8) !important;
+}
+
+/* ─── Card back ─────────────────────────────────────────── */
+.card-back {
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: relative; overflow: hidden;
+}
+
+/* ─── Score badge ───────────────────────────────────────── */
+.score-badge {
+  min-width: 4.5vh; height: 3.2vh;
+  background: rgba(0,0,0,0.72);
+  color: #fff; border-radius: 0.9vh;
+  border: 1px solid rgba(255,255,255,0.18);
+  font-size: 1.9vh; font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 1vh;
+  visibility: hidden;
+}
+.score-badge.visible  { visibility: visible; }
+.score-badge.bust     { border-color: #e74c3c; color: #e74c3c; }
+.score-badge.perfect  { border-color: #f1c40f; color: #f1c40f; }
+
+/* ─── Janela de resultado (igual à roleta) ───────────────── */
+#resultWindow {
+  text-shadow:
+    0.2vh 0.2vh 0 black, -0.2vh -0.2vh 0 black,
+    -0.2vh 0.2vh 0 black, 0.2vh -0.2vh 0 black,
+    0.2vh 0 0 black, 0 0.2vh 0 black,
+    -0.2vh 0 0 black, 0 -0.2vh 0 black;
+  width: 27.5vh; height: 27.5vh;
+  border: 0.4vh solid transparent;
+  position: fixed;
+  left: 50%; top: 18%;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  background-color: #000000;
+  z-index: 50;
+  background-image: url('star.png');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.5s ease;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1.5vh;
+}
+#resultWindowCircle {
+  width: 30vh; height: 30vh;
+  position: absolute; left: -4%; top: -4%;
+  border-radius: 50%;
+  background-image: url('winBorder.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  z-index: 9;
+}
+#resultWindowText {
+  font-family: 'Georgia', serif;
+  color: white; font-size: 3.8vh;
+  text-align: center; font-weight: bold;
+  /* animation é controlada via JS por tipo de resultado */
+  z-index: 10; position: relative;
+  line-height: 1.3;
+  white-space: pre-line;  /* suporta \n nas mensagens */
+  padding: 0 2vh;
+}
+#resultMoneyInfo {
+  border: 0.6vh solid #cd953b;
+  background-color: #161616;
+  border-radius: 5vh;
+  padding: 0.5vh 2vh;
+  font-size: 3.5vh;
+  font-family: 'Georgia', serif;
+  color: #cd953b;
+  text-align: center;
+  display: none;
+  z-index: 10; position: relative;
+}
+/* Pulsação para VITÓRIA (dourado) */
+@keyframes blink2 {
+  0%   { color: white; }
+  50%  { color: #ffc900; }
+  100% { color: white; }
+}
+/* Pulsação para DERROTA (vermelho) */
+@keyframes blinkRed {
+  0%   { color: white; }
+  50%  { color: #ff4444; }
+  100% { color: white; }
+}
+/* Pulsação para EMPATE (azul) */
+@keyframes blinkBlue {
+  0%   { color: white; }
+  50%  { color: #5ba3ff; }
+  100% { color: white; }
+}
+/* rotate-bg removed — background-image not animatable via CSS;
+   star cycling is now handled by JS (startStarAnim/stopStarAnim) */
+
+/* ─── Insurance prompt ──────────────────────────────────── */
+#insurancePrompt {
+  display: none;
+  position: fixed; left: 50%; top: 42%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.92);
+  border: 0.3vh solid #c9952a;
+  border-radius: 2vh;
+  padding: 2.5vh 4vh;
+  z-index: 5000;
+  text-align: center;
+  font-family: 'Georgia', serif;
+}
+#insuranceText {
+  color: white; font-size: 2.2vh;
+  margin-bottom: 2vh; line-height: 1.6;
+}
+#insuranceBtns {
+  display: flex; gap: 2vh; justify-content: center;
+}
+
+/* ─── Player row: fichas + cartas lado a lado ────────────── */
+#playerRow {
+  display: flex; flex-direction: row;
+  align-items: flex-end; gap: 0;
+  position: relative;
+}
+
+/* ─── Mãos no split ──────────────────────────────────────── */
+#handsContainer {
+  display: flex; gap: 3vh; align-items: flex-end;
+}
+.hand-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.4vh;
+}
+.hand-label {
+  font-size: 1.1vh; color: rgba(255,255,255,0);
+  text-transform: uppercase; letter-spacing: 0.3em;
+  font-family: 'Georgia', serif;
+  transition: color 0.3s;
+}
+.hand-wrap.active-hand .hand-label  { color: #f0c030; }
+.hand-wrap.active-hand .cards-row   { filter: drop-shadow(0 0 1.5vh rgba(240,192,48,0.9)); }
+.hand-wrap.inactive-hand .cards-row { filter: brightness(0.6); }
+
+/* ─── Área de aposta na mesa ─────────────────────────────── */
+#betArea {
+  position: absolute;
+  left: -9vh;
+  bottom: 0;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.4vh;
+  cursor: pointer; min-width: 7vh;
+  z-index: 5;
+}
+#betChips {
+  position: relative;
+  width: 7vh; height: 8vh;
+  flex-shrink: 0;
+}
+.bet-chip-stack {
+  position: absolute;
+  width: 6.5vh; height: 6.5vh;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  left: 0.25vh;
+  filter: drop-shadow(0 0.2vh 0.2vh black);
+}
+#betDisplay {
+  color: #f0c030; font-weight: bold; font-size: 1.6vh;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  pointer-events: none; white-space: nowrap;
+}
+
+/* ─── HUD ───────────────────────────────────────────────── */
+#hud {
+  background: rgba(0,0,0,0.0);
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  bottom: calc(0% + env(safe-area-inset-bottom, 0px));
+}
+
+/* ─── Info bar (mesmo estilo roleta) ─────────────────────── */
+#infoSector {
+  width: 100%; height: 5.6vh;
+  background-color: black;
+  display: flex; align-items: center;
+}
+#betInfo {
+  height: 100%; width: 90vh;
+  margin: 0 auto;
+  display: flex; font-size: 2vh;
+  justify-content: space-around;
+  align-items: center;
+  color: white;
+}
+#betInfo p { margin: 0; text-align: left; }
+
+/* ─── Chips zone (idêntico à roleta) ────────────────────── */
+#chipsZone {
+  width: 100%; height: 10vh;
+  display: flex;
+  background: #000000a8;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+}
+
+#leftSide4btns {
+  display: flex;
+  justify-content: space-around;
+  border: 0.5vh solid gray;
+  background-color: #a3a3a3;
+  width: 25vh; height: 6vh;
+  border-radius: 5vh;
+  z-index: 2;
+  align-items: center;
+}
+
+#chipsSelector {
+  overflow: hidden;
+  width: 78vh; height: 100%;
+  padding: 0 3vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#chipsSelectorDisabled {
+  width: 35%; height: 88%;
+  margin: 0 auto;
+  position: absolute;
+  left: 0; right: 0; bottom: 7%;
+  z-index: 100;
+  display: none;
+}
+
+#rightSide4Btns {
+  display: flex;
+  border: 0.5vh solid gray;
+  background-color: #a3a3a3;
+  width: 33vh; height: 6vh;
+  border-radius: 10% / 50%;
+  z-index: 2;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.betComplete {
+  display: flex;
+  width: 10vh; height: 5.7vh;
+  position: relative; right: 0%;
+  z-index: 9;
+  background-image: linear-gradient(147deg, #d6d6d6 0%, #323232c2 74%);
+  border-radius: 26% / 50%;
+  border-top-left-radius: 0%;
+  border-bottom-left-radius: 0%;
+  border: none;
+  box-shadow: 0 0 1vh 0.1vh black;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-around;
+  transition: box-shadow 0.3s;
+}
+.betComplete > i { color: black; font-size: 3.5vh; margin-left: 1vh; }
+.betComplete:active { box-shadow: inset 0 0 1vh 0.3vh black; }
+
+.insideFB {
+  left: 2vh;
+  background-color: #a3a3a3;
+  display: flex;
+  width: 25vh; height: 5.57vh;
+  position: relative;
+  z-index: 10;
+  border-radius: 12% / 50%;
+  box-shadow: inset -1vh 0 1vh -0.9vh black;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.circleBtns {
+  width: 5vh; height: 5vh;
+  border-radius: 50%;
+  background-color: #ffffff7a;
+  color: #424242;
+  box-shadow: 0 0 0.5vh 0.1vh black;
+  background-repeat: no-repeat;
+  border: none;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  padding: 0;
+  background-size: 70%;
+}
+.circleBtns:active  { box-shadow: 0 0 1vh 0.2vh inset black; background-color: #8d8d8d; }
+.circleBtns:hover   { background-color: #00c700; }
+.disabledCircleBtns { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* Chip buttons */
+.chipsBtn {
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 7.45vh; height: 7.45vh;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 1;
+  transition: transform 0.3s ease;
+  filter: brightness(0.5);
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+}
+.chipsBtn:active { transform: scale(0.9); }
+.chipsBtn:hover  { transform: scale(1.12); cursor: pointer; filter: brightness(1); }
+.biggerBtn { transform: scale(1.12); filter: brightness(1) !important; }
+.disabledChips { filter: grayscale(1) !important; opacity: 0.3; pointer-events: none; }
+
+/* Chip images */
+#bj-chips1 { background-image: url('chips1.png'); }
+#bj-chips2 { background-image: url('chips2.png'); }
+#bj-chips3 { background-image: url('chips3.png'); }
+#bj-chips4 { background-image: url('chips4.png'); }
+#bj-chips5 { background-image: url('chips5.png'); }
+#bj-chips6 { background-image: url('chips6.png'); }
+#bj-chips7 { background-image: url('chips7.png'); }
+#bj-chips8 { background-image: url('chips8.png'); }
+#bj-chips9 { background-image: url('chips9.png'); }
+
+/* Icon buttons */
+#betInfoBtn   { background-image: url('infoIcon.png'); }
+#soundBtn     { background-image: url('soundIcon.png'); }
+#fullscreenBtn{ background-image: url('resolutionIcon.png'); }
+
+/* buttonsInfo: info labels below pills (mesma roleta — ficam vazios no blackjack) */
+.buttonsInfo  { display: none; }
+#x2BetBtn     { background-image: url('x2icon.png'); }
+#cancelLastBtn{ background-image: url('cancelLastIcon.png'); }
+#cancelAllBtn { background-image: url('cancelAllIcon.png'); }
+#repeatBetBtn { background-image: url('repeatIcon.png'); }
+
+/* ─── Playing controls (HIT/STAND/DOUBLE/SPLIT) ─────────── */
+#playingControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5vh;
+  padding: 1vh 0;
+  background: rgba(0,0,0,0.85);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.btn {
+  padding: 1.2vh 3vh; font-size: 2vh; font-weight: bold;
+  border: none; border-radius: 0.7vh; cursor: pointer;
+  letter-spacing: 0.07em;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+  font-family: 'Georgia', serif;
+  transition: transform 0.13s, box-shadow 0.13s;
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px) scale(1.05); box-shadow: 0 5px 14px rgba(0,0,0,0.5); }
+.btn:active:not(:disabled) { transform: scale(0.96); }
+.btn:disabled { opacity: 0.28; cursor: not-allowed; }
+
+.btn-hit    { background: linear-gradient(135deg, #1a7a3c, #27ae60, #1a7a3c); color: #fff; }
+.btn-stand  { background: linear-gradient(135deg, #8b0000, #c0392b, #8b0000); color: #fff; }
+.btn-double { background: linear-gradient(135deg, #154b80, #2980b9, #154b80); color: #fff; }
+.btn-split  { background: linear-gradient(135deg, #6a0080, #9b59b6, #6a0080); color: #fff; }
+.btn-new    { background: linear-gradient(135deg, #c49a00, #f0c030, #c49a00); color: #111; }
+
+/* ─── Loading screen (fundo idêntico à roleta) ──────────── */
+#loadingScreen {
+  height: 100%;
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex;
+  align-items: center; justify-content: center;
+  background-image: url('loadingBack.png');
+  background-size: 100% 100%;
+}
+
+/* ─── Seletor de idioma (cópia exata da roleta) ─────────── */
+#langChoose {
+  width: auto;
+  padding: 3vh 3.5vh;
+  height: auto;
+  background: #000000b3;
+  font-size: 2.7vh;
+  border-radius: 3vh;
+  text-align: center;
+  color: white;
+  position: absolute;
+  box-shadow: 0vh 1vh 2vh 0vh black;
+  transform: scale(0);
+  text-shadow: 0vh 0vh 1vh black;
+  transition: transform 0.5s ease;
+}
+#langChoose h1 {
+  font-family: oswald, sans-serif;
+  font-weight: 800;
+  font-size: 4.5vh;
+  margin: 0 0 2.5vh 0;
+  text-shadow: 0.2vh 0.2vh 0 black, -0.2vh -0.2vh 0 black,
+               -0.2vh 0.2vh 0 black, 0.2vh -0.2vh 0 black,
+               0.2vh 0 0 black, 0 0.2vh 0 black, -0.2vh 0 0 black,
+               0 -0.2vh 0 black, 0.1vh 0.1vh 0 black, -0.1vh -0.1vh 0 black,
+               -0.1vh 0.1vh 0 black, 0.1vh -0.1vh 0 black;
+}
+.langBtns {
+  width: 18vh;
+  height: 13vh;
+  align-items: center;
+  appearance: none;
+  border: 0;
+  border-radius: 1vh;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 0.4vh 0.5vh,
+    rgba(45, 35, 66, 0.3) 0 1vh 1vh -1vh,
+    rgba(58, 65, 111, 0.5) 0 -0.5vh 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'bald', oswald;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  font-size: 4vh;
+  text-shadow: 0.2vh 0.2vh 0 black, -0.2vh -0.2vh 0 black, -0.2vh 0.2vh 0 black,
+    0.2vh -0.2vh 0 black, 0.2vh 0 0 black, 0 0.2vh 0 black, -0.2vh 0 0 black,
+    0 -0.2vh 0 black, 0.1vh 0.1vh 0 black, -0.1vh -0.1vh 0 black,
+    -0.1vh 0.1vh 0 black, 0.1vh -0.1vh 0 black, 0.1vh 0 0 black, 0 0.1vh 0 black,
+    -0.1vh 0 0 black, 0 -0.1vh 0 black;
+}
+.langBtns:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 0.5vh 0.5vh,
+    rgba(45, 35, 66, 0.3) 0 0.5vh 0vh 0vh, #000000 0 -0.5vh 0 inset;
+  transform: translateY(-0.5vh);
+}
+#frLang:active,
+#ruLang:active,
+#enLang:active {
+  box-shadow: #000000 0 0.4vh 1vh inset;
+  transform: translateY(-0.5vh);
+}
+/* Bandeiras — cópia exata da roleta */
+#enLang {
+  background-image: url('en.png');
+  background-size: cover;
+}
+#ruLang {
+  background-image: url('ru.png');
+  background-size: cover;
+  margin: 2vh;
+}
+#frLang {
+  background-image: url('fr.png');
+  background-size: cover;
+}
+
+#loadingBarWrapper {
+  position: absolute; bottom: 12vh;
+  left: 50%; transform: translateX(-50%);
+  width: 60vw; max-width: 400px; height: 2.5vh;
+  background: rgba(0,0,0,0.5); border-radius: 1.5vh;
+  border: 1px solid rgba(201,149,42,0.5); overflow: hidden;
+  display: none;
+}
+#loadingBar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #c49a00, #f0c030, #c49a00);
+  border-radius: 1.5vh; transition: width 0.1s linear;
+}
+#loadingPercent {
+  position: absolute; bottom: 8.5vh;
+  left: 50%; transform: translateX(-50%);
+  color: #f0c030; font-size: 2vh;
+  font-family: 'Georgia', serif; font-weight: bold;
+  display: none;
+}

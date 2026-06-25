@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Blackjack — Inacios777</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&effect=neon|outline|emboss|shadow-multiple" />
+  <script src="https://kit.fontawesome.com/00e5a0a6bd.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <a id="backToLobby" href="/lobby">&#8592; Lobby</a>
+
+  <!-- Loading screen -->
+  <div id="loadingScreen">
+    <!-- Seletor de idioma (idêntico à roleta) -->
+    <div id="langChoose" class="font-effect-outline" style="transform: scale(0)">
+      <h1 id="chooseLangTitle">Choose language</h1>
+      <button class="langBtns" id="enLang">EN</button>
+      <button class="langBtns" id="ruLang">RU</button>
+      <button class="langBtns" id="frLang">FR</button>
+    </div>
+    <!-- Barra de progresso -->
+    <div id="loadingBarWrapper">
+      <div id="loadingBar"></div>
+    </div>
+    <p id="loadingPercent">0%</p>
+  </div>
+
+  <!-- Insurance prompt overlay -->
+  <div id="insurancePrompt">
+    <p id="insuranceText">Dealer mostra um Ás</p>
+    <div id="insuranceBtns">
+      <button id="insuranceYes" class="btn btn-hit">SIM</button>
+      <button id="insuranceNo" class="btn btn-stand">NÃO</button>
+    </div>
+  </div>
+
+  <div id="game">
+    <div id="tableBg"></div>
+
+    <!-- Music player (identical to roulette) -->
+    <div id="musicInfo">
+      <i id="vinyl"></i>
+      <p id="nowPlaying">Night Skies</p>
+      <button class="changeMusic" id="prevMusic"><i class="fa-solid fa-backward"></i></button>
+      <button id="pausePlay"><i class="fa-solid fa-pause" id="musicPause"></i></button>
+      <button class="changeMusic" id="nextMusic"><i class="fa-solid fa-forward"></i></button>
+      <p id="musicTimer">00:00</p>
+    </div>
+
+    <!-- Janela de resultado (igual à roleta) -->
+    <div id="resultWindow">
+      <div id="resultWindowCircle"></div>
+      <p id="resultWindowText">VITÓRIA!</p>
+      <div id="resultMoneyInfo"></div>
+    </div>
+
+    <div id="mainArea">
+
+      <!-- DEALER (sem label) -->
+      <div id="dealerSection">
+        <div id="dealerCards" class="cards-row"></div>
+        <div id="dealerScore" class="score-badge"></div>
+      </div>
+
+      <!-- PLAYER (sem label) -->
+      <div id="playerSection">
+        <div id="playerRow">
+          <!-- Fichas da aposta na mesa -->
+          <div id="betArea">
+            <div id="betChips"></div>
+            <span id="betDisplay"></span>
+          </div>
+          <!-- Mãos: hand1 sempre, hand2 só no split -->
+          <div id="handsContainer">
+            <div class="hand-wrap" id="hand1Wrap">
+              <div id="playerScore" class="score-badge"></div>
+              <div id="playerCards" class="cards-row"></div>
+              <div class="hand-label" id="hand1Label">MÃO 1</div>
+            </div>
+            <div class="hand-wrap" id="hand2Wrap" style="display:none">
+              <div id="splitScore" class="score-badge"></div>
+              <div id="splitCards" class="cards-row"></div>
+              <div class="hand-label" id="hand2Label">MÃO 2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- HUD: Playing controls + Info + Chips zone -->
+    <div id="hud">
+
+      <!-- Playing controls: HIT / STAND / DOUBLE / SPLIT / NOVA PARTIDA -->
+      <div id="playingControls">
+        <button class="btn btn-hit"    id="hitBtn"    disabled>HIT</button>
+        <button class="btn btn-stand"  id="standBtn"  disabled>STAND</button>
+        <button class="btn btn-double" id="doubleBtn" disabled>DOUBLE</button>
+        <button class="btn btn-split"  id="splitBtn"  disabled>SPLIT</button>
+        <button class="btn btn-new"    id="newGameBtn" style="display:none">NOVA PARTIDA</button>
+      </div>
+
+      <!-- Info bar: Balance / Bet / Last Win -->
+      <div id="infoSector">
+        <div id="betInfo">
+          <p id="moneyDisplay" class="betNumbers">Balance: $1,000</p>
+          <p id="totalBetDisplay" class="betNumbers">Bet: $0</p>
+          <p id="totalWinDisplay" class="betNumbers">Last Win: $0</p>
+        </div>
+      </div>
+
+      <!-- Chips zone -->
+      <div id="chipsZone">
+
+        <!-- Left: info + sound + fullscreen (mesmo estilo roleta) -->
+        <div class="fourButtons" id="leftSide4btns">
+          <div class="buttonsInfo" id="leftBtnInfo"></div>
+          <button class="circleBtns disabledCircleBtns" id="betInfoBtn"></button>
+          <button class="circleBtns" id="soundBtn"></button>
+          <button class="circleBtns" id="fullscreenBtn"></button>
+        </div>
+
+        <!-- Center: 9 chips -->
+        <div id="chipsSelector">
+          <div class="chipsBtn" id="bj-chips1" data-value="1"></div>
+          <div class="chipsBtn" id="bj-chips2" data-value="2"></div>
+          <div class="chipsBtn" id="bj-chips3" data-value="5"></div>
+          <div class="chipsBtn" id="bj-chips4" data-value="10"></div>
+          <div class="chipsBtn" id="bj-chips5" data-value="25"></div>
+          <div class="chipsBtn" id="bj-chips6" data-value="50"></div>
+          <div class="chipsBtn" id="bj-chips7" data-value="100"></div>
+          <div class="chipsBtn" id="bj-chips8" data-value="500"></div>
+          <div class="chipsBtn" id="bj-chips9" data-value="1000"></div>
+        </div>
+
+        <!-- Right: deal + bet controls -->
+        <div id="rightSide4Btns">
+          <!-- Deal / Nova partida button -->
+          <button class="betComplete" id="dealBtn">
+            <i class="fa-solid fa-play" id="startIcon"></i>
+          </button>
+          <!-- Bet action buttons -->
+          <div class="insideFB" id="fbShadow">
+            <button class="circleBtns disabledCircleBtns" id="x2BetBtn" title="Dobrar aposta"></button>
+            <button class="circleBtns disabledCircleBtns" id="cancelLastBtn" title="Cancelar última"></button>
+            <button class="circleBtns disabledCircleBtns" id="cancelAllBtn" title="Cancelar tudo"></button>
+            <button class="circleBtns disabledCircleBtns" id="repeatBetBtn" title="Repetir aposta"></button>
+          </div>
+        </div>
+
+        <!-- Disabled overlay during dealing/playing -->
+        <div id="chipsSelectorDisabled"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
