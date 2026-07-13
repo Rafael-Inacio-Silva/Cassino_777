@@ -1,20 +1,75 @@
-# 🎰 inacios777 — Cassino (projeto de demonstração)
+<div align="center">
 
-![Projeto](https://img.shields.io/badge/projeto-portf%C3%B3lio%20%2F%20estudo-8957e5)
-![Node](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-4169E1?logo=postgresql&logoColor=white)
+# 🎰 INACIOS777
 
-**Projeto de portfólio / estudo** que demonstra engenharia full-stack de um lobby de cassino: cadastro com verificação de identidade (CPF + maioridade), carteira de **saldo de demonstração**, jogos com motor *server-authoritative* e painel administrativo com indicadores (GGR).
+### Plataforma full-stack de cassino — projeto de portfólio
 
-> 🎓 **Ambiente de demonstração — não é um cassino real.** Não movimenta dinheiro de verdade, **não possui licença de operação** e **não processa pagamentos**. A operadora "inacios777", o CNPJ e a "licença" exibidos na interface são **fictícios**, usados apenas para dar realismo à demo. O saldo é meramente ilustrativo, creditado localmente para testar os jogos.
+Uma experiência completa de demonstração, do cadastro ao backoffice, com carteira fictícia e jogos cuja lógica é controlada pelo servidor.
+
+[![Projeto](https://img.shields.io/badge/projeto-portf%C3%B3lio%20%2F%20estudo-8957e5)](#aviso-importante)
+[![Node](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](#stack)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](#stack)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-4169E1?logo=postgresql&logoColor=white)](#stack)
+[![Demo](https://img.shields.io/badge/dinheiro-real%3F-n%C3%A3o-C89B2B)](#aviso-importante)
+
+</div>
+
+## Visão geral
+
+O **INACIOS777** demonstra a engenharia de uma aplicação full-stack com autenticação, verificação de identidade (CPF e maioridade), carteira de saldo ilustrativo, histórico, painel administrativo e dois jogos integrados a motores *server-authoritative*.
+
+O foco do projeto é mostrar decisões de arquitetura, segurança transacional e experiência do usuário — não oferecer apostas reais.
+
+## Demonstração visual
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/01-login.png" alt="Tela de autenticação do INACIOS777" width="100%" />
+      <br />
+      <strong>Autenticação</strong>
+      <br />
+      <sub>Entrada por e-mail ou Google, com aviso permanente de ambiente demonstrativo.</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/02-lobby.png" alt="Lobby e área administrativa do INACIOS777" width="100%" />
+      <br />
+      <strong>Lobby e administração</strong>
+      <br />
+      <sub>Saldo fictício, histórico, backoffice e acesso aos jogos disponíveis.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/03-roleta-francesa.png" alt="Mesa demonstrativa de Roleta Francesa" width="100%" />
+      <br />
+      <strong>Roleta Francesa</strong>
+      <br />
+      <sub>Mesa interativa integrada ao saldo demonstrativo e ao motor do backend.</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/04-blackjack.png" alt="Mesa demonstrativa de Blackjack" width="100%" />
+      <br />
+      <strong>Blackjack</strong>
+      <br />
+      <sub>Rodadas com ações, estado e liquidação decididos no servidor.</sub>
+    </td>
+  </tr>
+</table>
+
+<a id="aviso-importante"></a>
+
+> [!IMPORTANT]
+> **Ambiente de demonstração — não é um cassino real.** Não movimenta dinheiro de verdade, não possui licença de operação e não processa pagamentos. A empresa, o CNPJ, a licença e os saldos exibidos são fictícios e servem somente para dar contexto ao projeto de portfólio.
 >
-> Por ser um exercício de estudo, **não deve** ser usado para operar com dinheiro real.
+> Este software **não deve ser usado para operar jogos com dinheiro real**.
 
 ---
 
 ## Índice
 
+- [Visão geral](#visão-geral)
+- [Demonstração visual](#demonstração-visual)
 - [Funcionalidades](#funcionalidades)
 - [Arquitetura](#arquitetura)
 - [Stack](#stack)
